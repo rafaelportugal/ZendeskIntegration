@@ -20,6 +20,7 @@ class BaseZenDesk(object):
         _method = getattr(requests, method.lower())
         headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
         url = "{host}{resource}".format(host=self.host, resource=resource)
+        print url
         return _method(url, auth=self.auth, data=json.dumps(kwargs),
                        timeout=self.timeout, headers=headers)
 
@@ -30,7 +31,7 @@ class BaseRest(object):
         self.resource = resource
         self.class_object = class_object
 
-    def get(self, resource=None, page=0, per_page=10, **kwargs):
+    def get(self, resource=None, page=1, per_page=10, **kwargs):
         resource = resource or self.resource
         endpoint = "{}.json?page={}&per_page={}".format(
             resource, page, per_page)
