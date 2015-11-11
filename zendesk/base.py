@@ -20,7 +20,6 @@ class BaseZenDesk(object):
         _method = getattr(requests, method.lower())
         headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
         url = "{host}{resource}".format(host=self.host, resource=resource)
-        print url
         return _method(url, auth=self.auth, data=json.dumps(kwargs),
                        timeout=self.timeout, headers=headers)
 
@@ -40,6 +39,7 @@ class BaseRest(object):
             content = resp.json() if getattr(resp, 'json') else {}
             raise RequestException(resp.status_code, content=content)
         resp = resp.json()
+        # return resp
         items = resp.pop(self.resource)
         resp.update(items=map(lambda x: self.class_object(**x), items))
         return resp
@@ -127,7 +127,6 @@ class BaseRest(object):
                     data = {resource: group}
                     resp = self.base._request(url, 'PUT', **data)
                     jobs.append(resp.json())
-                    print resp.json()
                 except Exception:
                     errors.append(group)
             if errors:
@@ -156,7 +155,6 @@ class BaseRest(object):
             errors = []
             for group in groups:
                 try:
-                    print ','.join(group)
                     url = "{}/destroy_many.json?{}={}.json".format(
                         resource, name_field, ','.join(group))
                     resp = self.base._request(url, 'DELETE')

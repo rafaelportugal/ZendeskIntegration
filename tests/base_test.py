@@ -103,28 +103,28 @@ class TestBaseZenDesk(unittest.TestCase):
 #                   body='{"error": "not found"}', status=404,
 #                   content_type='application/json')
 
-class TestBaseRest(unittest.TestCase):
-    def setUp(self):
-        self.hostname = "test_host"
-        self.user = "john_tdd"
-        self.password = "123Change"
-        self.timeout = 15
-        self.resource = 'Organizations'
-        self.class_obj = Organization
-        self.set_instance()
+# class TestBaseRest(unittest.TestCase):
+#     def setUp(self):
+#         self.hostname = "test_host"
+#         self.user = "john_tdd"
+#         self.password = "123Change"
+#         self.timeout = 15
+#         self.resource = 'Organizations'
+#         self.class_obj = Organization
+#         self.set_instance()
 
-    def set_instance(self):
-        base = BaseZenDesk(self.hostname, self.user, self.password,
-                           self.timeout)
+#     def set_instance(self):
+#         base = BaseZenDesk(self.hostname, self.user, self.password,
+#                            self.timeout)
 
-        self.base_rest = BaseRest(base, self.resource, self.class_obj)
-        self.count_objects = 123
-        self.base_json = BaseJson(base.host, self.resource, self.count_objects)
+#         self.base_rest = BaseRest(base, self.resource, self.class_obj)
+#         self.count_objects = 123
+#         self.base_json = BaseJson(base.host, self.resource, self.count_objects)
 
-    def test_init(self):
-        self.assertIsInstance(self.base_rest.base, BaseZenDesk)
-        self.assertEqual(self.base_rest.class_object, Organization)
-        self.assertEqual(self.base_rest.resource, self.resource)
+#     def test_init(self):
+#         self.assertIsInstance(self.base_rest.base, BaseZenDesk)
+#         self.assertEqual(self.base_rest.class_object, Organization)
+#         self.assertEqual(self.base_rest.resource, self.resource)
 
     # @responses.activate
     # def test_get_success(self):
@@ -138,18 +138,18 @@ class TestBaseRest(unittest.TestCase):
     #     resp = requests.get(url)
     #     print resp.json()
 
-    @responses.activate
-    def test_my_api():
-        responses.add(responses.GET, 'http://twitter.com/api/1/foobar',
-                      json={"error": "not found"}, status=404)
+    # @responses.activate
+    # def test_my_api():
+    #     responses.add(responses.GET, 'http://twitter.com/api/1/foobar',
+    #                   json={"error": "not found"}, status=404)
 
-        resp = requests.get('http://twitter.com/api/1/foobar')
+    #     resp = requests.get('http://twitter.com/api/1/foobar')
 
-        assert resp.json() == {"error": "not found"}
+    #     assert resp.json() == {"error": "not found"}
 
-        assert len(responses.calls) == 1
-        assert responses.calls[0].request.url == 'http://twitter.com/api/1/foobar'
-        assert responses.calls[0].response.text == '{"error": "not found"}'
+    #     assert len(responses.calls) == 1
+    #     assert responses.calls[0].request.url == 'http://twitter.com/api/1/foobar'
+    #     assert responses.calls[0].response.text == '{"error": "not found"}'
 
         # resp = self.base_rest.get()
         # self.assertEqual(len(resp.get('items')), 10)
