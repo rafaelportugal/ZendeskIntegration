@@ -24,9 +24,9 @@ class PyTest(TestCommand):
         sys.exit(pytest.main(self.test_args))
 
 
-version = "0.1.1"
+version = "0.2"
 
-setup(name="zendesk",
+setup(name="zendesk_integration",
       version=version,
       description="Communicator with the Zendesk API",
       long_description=open("README.rst").read(),
