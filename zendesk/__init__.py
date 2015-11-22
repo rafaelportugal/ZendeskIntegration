@@ -6,7 +6,7 @@ Licensed under MIT.
 '''
 # from .zendesk import *
 
-
+from custom_exceptions import *
 from base import BaseZenDesk
 from tickets import Tickets
 from users import Users
