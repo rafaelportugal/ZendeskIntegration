@@ -30,7 +30,7 @@ class BaseRest(object):
         self.resource = resource
         self.class_object = class_object
 
-    def get(self, resource=None, page=0, per_page=10, **kwargs):
+    def get(self, resource=None, page=1, per_page=10, **kwargs):
         resource = resource or self.resource
         endpoint = "{}.json?page={}&per_page={}".format(
             resource, page, per_page)
@@ -39,6 +39,7 @@ class BaseRest(object):
             content = resp.json() if getattr(resp, 'json') else {}
             raise RequestException(resp.status_code, content=content)
         resp = resp.json()
+        # return resp
         items = resp.pop(self.resource)
         resp.update(items=map(lambda x: self.class_object(**x), items))
         return resp
@@ -126,7 +127,6 @@ class BaseRest(object):
                     data = {resource: group}
                     resp = self.base._request(url, 'PUT', **data)
                     jobs.append(resp.json())
-                    print resp.json()
                 except Exception:
                     errors.append(group)
             if errors:
@@ -155,7 +155,6 @@ class BaseRest(object):
             errors = []
             for group in groups:
                 try:
-                    print ','.join(group)
                     url = "{}/destroy_many.json?{}={}.json".format(
                         resource, name_field, ','.join(group))
                     resp = self.base._request(url, 'DELETE')

@@ -11,11 +11,7 @@ class Base(object):
         self.__dict__ = kwargs
         singular_resource = singularize(resource)
         name_custom_fields = '{}_fields'.format(singular_resource)
-        if getattr(kwargs, name_custom_fields, None):
-            custom_fields = kwargs.pop(name_custom_fields, {})
-        else:
-            custom_fields = {}
-        self.CustomFields = CustomFields(**custom_fields)
+        self.CustomFields = CustomFields(**kwargs.pop(name_custom_fields, {}))
         map(lambda x: setattr(self, x[0], x[1]), kwargs.items())
 
     @classmethod
