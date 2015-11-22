@@ -24,7 +24,7 @@ class PyTest(TestCommand):
         sys.exit(pytest.main(self.test_args))
 
 
-version = "0.1"
+version = "0.1.1"
 
 setup(name="zendesk",
       version=version,
