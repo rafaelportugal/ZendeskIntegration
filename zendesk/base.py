@@ -1,10 +1,10 @@
 # encoding: utf-8
 import requests
 import json
-from inflection import singularize
-from helper import separete_into_groups
 import exceptions
-from custom_exceptions import BulkExceededLimit, RequestException
+from inflection import singularize
+from zendesk.helper import separete_into_groups
+from zendesk.custom_exceptions import BulkExceededLimit, RequestException
 
 
 class BaseZenDesk(object):
