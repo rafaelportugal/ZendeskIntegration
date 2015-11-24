@@ -3,8 +3,8 @@ import requests
 import json
 import exceptions
 from inflection import singularize
-from zendesk.helper import separete_into_groups
-from zendesk.custom_exceptions import BulkExceededLimit, RequestException
+from helper import separete_into_groups
+from custom_exceptions import BulkExceededLimit, RequestException
 
 
 class BaseZenDesk(object):
@@ -52,6 +52,20 @@ class BaseRest(object):
             content = resp.json() if getattr(resp, 'json') else {}
             raise RequestException(resp.status_code, content=content)
         return self.class_object(**resp.json())
+
+    def get_one_query(self, query, resource=None):
+        resource = resource or self.resource
+        endpoint = "{}.json".format(resource)
+        resp = self.base._request(endpoint, query=query)
+        if resp.status_code != 200:
+            content = resp.json() if getattr(resp, 'json') else {}
+            raise RequestException(resp.status_code, content=content)
+        resp = resp.json()
+        if resp.get('count') != 1:
+            content = {'error': 'Return multiples objects for search!'}
+            raise RequestException(resp.status_code, content=content)
+        item = resp.pop(self.resource)[0]
+        return self.class_object(**item)
 
     def show_many(self, resource=None, name_field='ids', fields=[]):
         if len(fields) > 100:
