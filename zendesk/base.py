@@ -55,16 +55,16 @@ class BaseRest(object):
 
     def get_one_query(self, query, resource=None):
         resource = resource or self.resource
-        endpoint = "{}.json".format(resource)
-        resp = self.base._request(endpoint, query=query)
+        endpoint = "{}.json?query={}".format(resource, query)
+        resp = self.base._request(endpoint)
         if resp.status_code != 200:
             content = resp.json() if getattr(resp, 'json') else {}
             raise RequestException(resp.status_code, content=content)
-        resp = resp.json()
-        if resp.get('count') != 1:
-            content = {'error': 'Return multiples objects for search!'}
-            raise RequestException(resp.status_code, content=content)
-        item = resp.pop(self.resource)[0]
+        resp_json = resp.json()
+        if resp_json.get('count') != 1:
+            resp_json.update({'error': 'Return multiples objects for search!'})
+            raise RequestException(resp.status_code, content=resp_json)
+        item = resp_json.pop(self.resource)[0]
         return self.class_object(**item)
 
     def show_many(self, resource=None, name_field='ids', fields=[]):
