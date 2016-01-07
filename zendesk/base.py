@@ -55,8 +55,8 @@ class BaseRest(object):
 
     def get_one_query(self, query, resource=None):
         resource = resource or self.resource
-        endpoint = "{}.json?query={}".format(resource, query)
-        resp = self.base._request(endpoint)
+        endpoint = "{}/search.json".format(resource)
+        resp = self.base._request(endpoint, params=query)
         if resp.status_code != 200:
             content = resp.json() if getattr(resp, 'json') else {}
             raise RequestException(resp.status_code, content=content)
