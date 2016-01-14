@@ -1,9 +1,9 @@
 # encoding: utf-8
 import requests
 import json
+import exceptions
 from inflection import singularize
 from helper import separete_into_groups
-import exceptions
 from custom_exceptions import BulkExceededLimit, RequestException
 
 
@@ -52,6 +52,20 @@ class BaseRest(object):
             content = resp.json() if getattr(resp, 'json') else {}
             raise RequestException(resp.status_code, content=content)
         return self.class_object(**resp.json())
+
+    def get_one_query(self, query, resource=None):
+        resource = resource or self.resource
+        endpoint = "{}/search.json".format(resource)
+        resp = self.base._request(endpoint, params=query)
+        if resp.status_code != 200:
+            content = resp.json() if getattr(resp, 'json') else {}
+            raise RequestException(resp.status_code, content=content)
+        resp_json = resp.json()
+        if resp_json.get('count') != 1:
+            resp_json.update({'error': 'Return multiples objects for search!'})
+            raise RequestException(resp.status_code, content=resp_json)
+        item = resp_json.pop(self.resource)[0]
+        return self.class_object(**item)
 
     def show_many(self, resource=None, name_field='ids', fields=[]):
         if len(fields) > 100:
