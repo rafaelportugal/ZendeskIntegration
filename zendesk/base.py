@@ -137,7 +137,7 @@ class BaseRest(object):
         if resp.status_code != 200:
             content = resp.json() if getattr(resp, 'json') else {}
             raise RequestException(resp.status_code, content=content)
-        return self.class_object(**resp.json())
+        return self.class_object(**resp.json().get(singularize(resource)))
 
     def bulk_put_many(self, documents, resource=None, limit=100):
         if limit > 100:
