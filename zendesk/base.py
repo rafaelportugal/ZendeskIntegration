@@ -1,6 +1,7 @@
 # encoding: utf-8
 import requests
 import json
+import re
 import exceptions
 from inflection import singularize
 from helper import separete_into_groups
@@ -13,15 +14,15 @@ class BaseZenDesk(object):
         self.auth = (user, password)
         self.timeout = timeout
 
-    def _request(self, resource, method='get', **kwargs):
+    def _request(self, resource, method='get', params={}, **kwargs):
         '''
             TODO
         '''
         _method = getattr(requests, method.lower())
         headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
         url = "{host}{resource}".format(host=self.host, resource=resource)
-        return _method(url, auth=self.auth, data=json.dumps(kwargs),
-                       timeout=self.timeout, headers=headers)
+        return _method(url, auth=self.auth, params=params, headers=headers,
+                       data=json.dumps(kwargs), timeout=self.timeout)
 
 
 class BaseRest(object):
@@ -95,6 +96,18 @@ class BaseRest(object):
             raise RequestException(resp.status_code, content=content)
         return self.class_object(**resp.json().get(singularize(resource)))
 
+    def upsert(self, resource=None, **kwargs):
+        try:
+            return self.create(resource, **kwargs)
+        except RequestException as error:
+            if re.search('DuplicateValue', str(error.content)):
+                zendesk_obj = self.get_one_query(resource=resource,
+                                                 query={'external_id':
+                                                        kwargs['external_id']})
+                return self.put(resource=resource,
+                                id_object=zendesk_obj.id,
+                                **kwargs)
+
     def create_many(self, list_objects, resource=None):
         jobs = []
         resource = resource or self.resource
@@ -160,7 +173,8 @@ class BaseRest(object):
             content = resp.json() if getattr(resp, 'json') else {}
             raise RequestException(resp.status_code, content=content)
 
-    def delete_many(self, list_ids, resource=None, name_field='ids', limit=100):
+    def delete_many(self, list_ids, resource=None, name_field='ids',
+                    limit=100):
         resource = resource or self.resource
         groups = separete_into_groups(list_ids, limit)
         has_pendent_groups = True
