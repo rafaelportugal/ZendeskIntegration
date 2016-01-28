@@ -54,6 +54,12 @@ class BaseRest(object):
             raise RequestException(resp.status_code, content=content)
         return self.class_object(**resp.json())
 
+    def search(self, query, resource=None):
+        resource = resource or self.resource
+        endpoint = 'search.json'
+        resp = self.base._request(endpoint, params=query)
+        return resp.json()
+
     def get_one_query(self, query, resource=None):
         resource = resource or self.resource
         endpoint = "{}/search.json".format(resource)
