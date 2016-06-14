@@ -35,7 +35,7 @@ class BaseZenDesk(object):
 
             if response.status_code == 429:
                 raise TooManyRequestsException(
-                    response.content, response.headers.get('Retry-After'))
+                    response.content, response.headers.get('Retry-After', 60))
 
             return response
         except requests.ConnectionError:
