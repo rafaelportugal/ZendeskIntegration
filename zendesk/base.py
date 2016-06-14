@@ -19,28 +19,24 @@ class BaseZenDesk(object):
         '''
             TODO
         '''
-        try:
-            _method = getattr(requests, method.lower())
+        _method = getattr(requests, method.lower())
 
-            headers = {
-                'Content-type': 'application/json',
-                'Accept': 'text/plain'
-            }
+        headers = {
+            'Content-type': 'application/json',
+            'Accept': 'text/plain'
+        }
 
-            url = "{host}{resource}".format(host=self.host, resource=resource)
+        url = "{host}{resource}".format(host=self.host, resource=resource)
 
-            response = _method(
-                url, auth=self.auth, params=params, headers=headers,
-                data=json.dumps(kwargs), timeout=self.timeout)
+        response = _method(
+            url, auth=self.auth, params=params, headers=headers,
+            data=json.dumps(kwargs), timeout=self.timeout)
 
-            if response.status_code == 429:
-                raise TooManyRequestsException(
-                    response.content, response.headers.get('Retry-After', 60))
+        if response.status_code == 429:
+            raise TooManyRequestsException(
+                response.content, response.headers.get('Retry-After', 60))
 
-            return response
-        except requests.ConnectionError:
-            raise requests.ConnectionError(content=response.content,
-                                           status_code=response.status_code)
+        return response
 
 
 class BaseRest(object):
