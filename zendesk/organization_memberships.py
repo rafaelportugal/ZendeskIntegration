@@ -26,7 +26,7 @@ organization_memberships.json'.format(organization_id=organization_id)
             return None
 
         elif resp.status_code != 200:
-            content = resp.json() if getattr(resp, 'json') else {}
+            content = resp.content if getattr(resp, 'content') else {}
             raise RequestException(resp.status_code, content=content)
         resp = resp.json()
         for organization in resp['organization_memberships']:
