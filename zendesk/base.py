@@ -39,7 +39,8 @@ class BaseZenDesk(object):
 
             return response
         except requests.ConnectionError:
-            raise requests.ConnectionError(response.content)
+            raise requests.ConnectionError(content=response.content,
+                                           status_code=response.status_code)
 
 
 class BaseRest(object):
