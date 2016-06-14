@@ -2,6 +2,7 @@
 from base import BaseRest
 from objects import OrganizationMembership
 from custom_exceptions import RequestException
+from helper import safe_get_json
 
 
 class OrganizationMemberships(BaseRest):
@@ -26,7 +27,7 @@ organization_memberships.json'.format(organization_id=organization_id)
             return None
 
         elif resp.status_code != 200:
-            content = resp.json() if getattr(resp, 'json') else {}
+            content = safe_get_json(resp)
             raise RequestException(resp.status_code, content=content)
         resp = resp.json()
         for organization in resp['organization_memberships']:

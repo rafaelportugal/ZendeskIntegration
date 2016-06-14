@@ -11,7 +11,9 @@ class Organizations(BaseRest):
     '''
 
     def __init__(self, base):
-        super(Organizations, self).__init__(base, 'organizations', Organization)
+        super(Organizations, self).__init__(base,
+                                            'organizations',
+                                            Organization)
 
     @classmethod
     def save_bulk(self, organizations):
@@ -19,8 +21,8 @@ class Organizations(BaseRest):
 
     @classmethod
     def create_bulk(self, zendesk, organizations):
-    	url = "organizations/create_many.json"
-    	groups = separete_into_groups(organizations, 100)
+        url = "organizations/create_many.json"
+        groups = separete_into_groups(organizations, 100)
         has_pendent_groups = True
         while has_pendent_groups:
             errors = []
