@@ -17,7 +17,8 @@ class BulkExceededLimit(Exception):
 
 
 class TooManyRequestsException(Exception):
-    def __init__(self, content=None):
-        message = "Too many Requests were made in the same time slice."
+    def __init__(self, content=None, retry_after=60):
+        message = "Too many Requests were made in the same time slice, \
+try again after {} seconds.".format(retry_after)
         self.content = content
         super(TooManyRequestsException, self).__init__(message)
