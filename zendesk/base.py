@@ -4,7 +4,7 @@ import json
 import re
 import exceptions
 from inflection import singularize
-from helper import separete_into_groups
+from helper import separete_into_groups, safe_get_json
 from custom_exceptions import (BulkExceededLimit, RequestException,
                                TooManyRequestsException)
 
@@ -55,7 +55,7 @@ class BaseRest(object):
             resource, page, per_page)
         resp = self.base._request(endpoint, **kwargs)
         if resp.status_code != 200:
-            content = resp.content if getattr(resp, 'content') else {}
+            content = safe_get_json(resp)
             raise RequestException(resp.status_code, content=content)
         resp = resp.json()
 
@@ -68,7 +68,7 @@ class BaseRest(object):
         url = "{}/{}.json".format(resource, id_object)
         resp = self.base._request(url)
         if resp.status_code != 200:
-            content = resp.content if getattr(resp, 'content') else {}
+            content = safe_get_json(resp)
             raise RequestException(resp.status_code, content=content)
         return self.class_object(**resp.json())
 
@@ -83,7 +83,7 @@ class BaseRest(object):
         endpoint = "{}/search.json".format(resource)
         resp = self.base._request(endpoint, params=query)
         if resp.status_code != 200:
-            content = resp.content if getattr(resp, 'content') else {}
+            content = safe_get_json(resp)
             raise RequestException(resp.status_code, content=content)
         resp_json = resp.json()
         if resp_json.get('count') != 1:
@@ -100,7 +100,7 @@ class BaseRest(object):
             resource, name_field, fields.split(','))
         resp = self.base._request(url)
         if resp.status_code != 200:
-            content = resp.content if getattr(resp, 'content') else {}
+            content = safe_get_json(resp)
             raise RequestException(resp.status_code, content=content)
         resp = resp.json()
         items = resp.pop(self.resource)
@@ -116,7 +116,7 @@ class BaseRest(object):
         }
         resp = self.base._request(url, 'POST', **data)
         if resp.status_code != 201:
-            content = resp.content if getattr(resp, 'content') else {}
+            content = safe_get_json(resp)
             raise RequestException(resp.status_code, content=content)
         return self.class_object(**resp.json().get(singularize(resource)))
 
@@ -159,7 +159,7 @@ class BaseRest(object):
         data = {singularize(resource): kwargs}
         resp = self.base._request(url, 'PUT', **data)
         if resp.status_code != 200:
-            content = resp.content if getattr(resp, 'content') else {}
+            content = safe_get_json(resp)
             raise RequestException(resp.status_code, content=content)
         return self.class_object(**resp.json().get(singularize(resource)))
 
@@ -195,7 +195,7 @@ class BaseRest(object):
         url = "{}/{}.json".format(resource, id_object)
         resp = self.base._request(url, 'DELETE')
         if resp.status_code != 200:
-            content = resp.content if getattr(resp, 'content') else {}
+            content = safe_get_json(resp)
             raise RequestException(resp.status_code, content=content)
 
     def delete_many(self, list_ids, resource=None, name_field='ids',
