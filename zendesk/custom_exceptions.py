@@ -21,4 +21,5 @@ class TooManyRequestsException(Exception):
         message = "Too many Requests were made in the same time slice, \
 try again after {} seconds.".format(retry_after)
         self.content = content
+        self.retry_after = retry_after
         super(TooManyRequestsException, self).__init__(message)
