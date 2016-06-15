@@ -12,3 +12,10 @@ def separete_into_groups(list_objs, size_group=100):
     if group:
         groups.append(group)
     return groups
+
+
+def safe_get_json(response):
+    try:
+        return response.json()
+    except ValueError:
+        return {}
